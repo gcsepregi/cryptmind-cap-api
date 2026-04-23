@@ -1,11 +1,13 @@
 using CryptMindCapAPI.Apps.CryptMind;
 using CryptMindCapAPI.Apps.Mystweld;
 using CryptMindCapAPI.Core;
+using CryptMindCapAPI.Core.Auth;
 
 var builder = WebApplication.CreateBuilder(args);
 var settings = AppSettings.From(builder.Configuration);
 
 builder.Services.AddSingleton(settings);
+builder.Services.AddSingleton<ZeroKnowledgeAuthService>();
 builder.Services.AddOpenApi();
 
 IAppModule[] modules = [new CryptMindModule(), new MystweldModule()];
