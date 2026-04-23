@@ -1,0 +1,19 @@
+@host = http://localhost:5045
+
+### Health
+GET {{host}}/healthz
+Accept: application/json
+
+###
+
+### CryptMind
+GET {{host}}/cryptmind/v1/healthz
+Accept: application/json
+
+###
+
+### Mystweld
+GET {{host}}/mystweld/v1/healthz
+Accept: application/json
+
+###
