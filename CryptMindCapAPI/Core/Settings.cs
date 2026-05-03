@@ -8,6 +8,7 @@ public record AppSettings
     public required EmailSettings Email { get; init; }
     public required SecuritySettings Security { get; init; }
     public required UrlSettings Urls { get; init; }
+    public bool Sandbox { get; init; }
 
     public static AppSettings From(IConfiguration cfg) => new()
     {
@@ -20,6 +21,7 @@ public record AppSettings
         MariaDb = new()
         {
             Host             = cfg["MARIADB_HOST"]         ?? "localhost",
+            Port             = int.Parse(cfg["MARIADB_PORT"] ?? "3306"),
             User             = cfg["MARIADB_USER"]         ?? "",
             Password         = cfg["MARIADB_PASSWORD"]     ?? "",
             FlagsDatabase    = cfg["MARIADB_FLAGS_DB"]     ?? "cryptmind_flags",
@@ -53,10 +55,11 @@ public record AppSettings
         },
         Urls = new()
         {
-            AppBaseUrl      = cfg["APP_BASE_URL"]         ?? "",
-            CryptMindBase   = cfg["CRYPTMIND_BASE_URL"]   ?? "https://cryptmind.app",
-            MystweldBase    = cfg["MYSTWELD_BASE_URL"]    ?? "https://mystweld.app",
+            AppBaseUrl    = cfg["APP_BASE_URL"]       ?? "",
+            CryptMindBase = cfg["CRYPTMIND_BASE_URL"] ?? "https://cryptmind.app",
+            MystweldBase  = cfg["MYSTWELD_BASE_URL"]  ?? "https://mystweld.app",
         },
+        Sandbox = (cfg["SANDBOX"] ?? "").ToLowerInvariant() is "true" or "1" or "yes",
     };
 }
 
@@ -70,6 +73,7 @@ public record CouchDbSettings
 public record MariaDbSettings
 {
     public required string Host { get; init; }
+    public required int Port { get; init; }
     public required string User { get; init; }
     public required string Password { get; init; }
     public required string FlagsDatabase { get; init; }
@@ -77,7 +81,7 @@ public record MariaDbSettings
     public required string LogsDatabase { get; init; }
     public required bool UseMariaDb { get; init; }
 
-    private string Base => $"Server={Host};User Id={User};Password={Password}";
+    private string Base => $"Server={Host};Port={Port};User ID={User};Password={Password}";
     public string FlagsConnectionString   => $"{Base};Database={FlagsDatabase};";
     public string StorageConnectionString => $"{Base};Database={StorageDatabase};";
     public string LogsConnectionString    => $"{Base};Database={LogsDatabase};";

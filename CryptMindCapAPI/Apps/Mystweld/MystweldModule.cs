@@ -1,3 +1,4 @@
+using CryptMindCapAPI.Apps.Mystweld.Endpoints;
 using CryptMindCapAPI.Core;
 
 namespace CryptMindCapAPI.Apps.Mystweld;
@@ -12,6 +13,6 @@ public class MystweldModule : IAppModule
 
     public void MapEndpoints(RouteGroupBuilder routes)
     {
-        RouteGroupBuilder oracle = routes.MapGroup("/oracle");
+        routes.MapFeaturesEndpoints();
     }
 }

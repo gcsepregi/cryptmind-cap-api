@@ -1,3 +1,4 @@
+using CryptMindCapAPI.Apps.Mystweld.Services;
 using CryptMindCapAPI.Core;
 
 namespace CryptMindCapAPI.Apps.CryptMind;
@@ -8,6 +9,7 @@ public class CryptMindModule : IAppModule
 
     public void RegisterServices(IServiceCollection services, IConfiguration configuration)
     {
+        services.AddSingleton<FeaturesService>();
     }
 
     public void MapEndpoints(RouteGroupBuilder routes)
