@@ -14,6 +14,8 @@
 
     <ItemGroup>
       <Folder Include="Apps\CryptMind\Endpoints\" />
+      <Folder Include="Apps\Mystweld\Endpoints\" />
+      <Folder Include="Apps\Mystweld\Services\" />
     </ItemGroup>
 
 </Project>

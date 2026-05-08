@@ -1,5 +1,5 @@
-using CryptMindCapAPI.Apps.Mystweld.Endpoints;
 using CryptMindCapAPI.Core;
+using CryptMindCapAPI.Core.Endpoints;
 
 namespace CryptMindCapAPI.Apps.Mystweld;
 

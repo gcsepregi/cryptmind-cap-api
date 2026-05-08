@@ -1,7 +1,7 @@
-using CryptMindCapAPI.Apps.Mystweld.Services;
 using CryptMindCapAPI.Core.Auth;
+using CryptMindCapAPI.Core.Services;
 
-namespace CryptMindCapAPI.Apps.Mystweld.Endpoints;
+namespace CryptMindCapAPI.Core.Endpoints;
 
 public static class FeaturesEndpoints
 {

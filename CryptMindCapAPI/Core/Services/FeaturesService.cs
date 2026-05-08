@@ -1,11 +1,10 @@
 using System.Security.Cryptography;
 using System.Text;
 using System.Text.Json;
-using CryptMindCapAPI.Core;
 using Dapper;
 using MySqlConnector;
 
-namespace CryptMindCapAPI.Apps.Mystweld.Services;
+namespace CryptMindCapAPI.Core.Services;
 
 public record FlagsResponse(SortedDictionary<string, bool> Flags, string Etag);
 
@@ -14,8 +13,8 @@ public sealed class FeaturesService(AppSettings settings)
     private static readonly IReadOnlyDictionary<string, bool> DefaultFlags =
         new SortedDictionary<string, bool>(StringComparer.Ordinal)
         {
-            ["journal.core"]                    = true,
-            ["mystweld.core"]                   = true,
+            ["journal.core"] = true,
+            ["mystweld.core"] = true,
         };
 
     public async Task<SortedDictionary<string, bool>> GetEffectiveFlagsAsync(string entitlementId)
@@ -39,10 +38,7 @@ public sealed class FeaturesService(AppSettings settings)
 
         foreach (var (key, value) in rows)
         {
-            if (flags.ContainsKey(key))
-            {
-                flags[key] = value != 0;
-            }
+            flags[key] = value != 0;
         }
 
         return flags;

@@ -1,5 +1,6 @@
-using CryptMindCapAPI.Apps.Mystweld.Services;
 using CryptMindCapAPI.Core;
+using CryptMindCapAPI.Core.Endpoints;
+using CryptMindCapAPI.Core.Services;
 
 namespace CryptMindCapAPI.Apps.CryptMind;
 
@@ -14,5 +15,6 @@ public class CryptMindModule : IAppModule
 
     public void MapEndpoints(RouteGroupBuilder routes)
     {
+        routes.MapFeaturesEndpoints();
     }
 }
