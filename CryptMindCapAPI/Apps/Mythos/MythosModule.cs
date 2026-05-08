@@ -1,12 +1,11 @@
 using CryptMindCapAPI.Core;
 using CryptMindCapAPI.Core.Endpoints;
-using CryptMindCapAPI.Core.Services;
 
-namespace CryptMindCapAPI.Apps.CryptMind;
+namespace CryptMindCapAPI.Apps.Mythos;
 
-public class CryptMindModule : IAppModule
+public class MythosModule : IAppModule
 {
-    public string Slug => "cryptmind";
+    public string Slug => "mythos";
 
     public void RegisterServices(IServiceCollection services, IConfiguration configuration)
     {

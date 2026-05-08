@@ -1,7 +1,11 @@
 using CryptMindCapAPI.Apps.CryptMind;
 using CryptMindCapAPI.Apps.Mystweld;
+using CryptMindCapAPI.Apps.Mythos;
 using CryptMindCapAPI.Core;
 using CryptMindCapAPI.Core.Auth;
+using CryptMindCapAPI.Core.Data;
+using CryptMindCapAPI.Core.Services;
+using Microsoft.EntityFrameworkCore;
 
 var builder = WebApplication.CreateBuilder(args);
 var settings = AppSettings.From(builder.Configuration);
@@ -11,20 +15,24 @@ builder.Services.AddCors(options =>
     options.AddPolicy(
         "CryptMindCorsPolicy", 
         policy => 
-            policy.WithOrigins("http://localhost:4201")
+            policy.WithOrigins("http://localhost:4201", "http://localhost:4202")
                 .AllowAnyHeader()
                 .AllowAnyMethod()
             );
 });
 builder.Services.AddSingleton(settings);
 builder.Services.AddSingleton<ZeroKnowledgeAuthService>();
+builder.Services.AddDbContext<FlagsDbContext>(options =>
+    options.UseMySql(settings.MariaDb.FlagsConnectionString,
+        ServerVersion.AutoDetect(settings.MariaDb.FlagsConnectionString)));
+builder.Services.AddScoped<FeaturesService>();
 builder.Services.AddOpenApi();
 builder.Services.ConfigureHttpJsonOptions(opts =>
 {
     opts.SerializerOptions.PropertyNamingPolicy = System.Text.Json.JsonNamingPolicy.SnakeCaseLower;
 });
 
-IAppModule[] modules = [new CryptMindModule(), new MystweldModule()];
+IAppModule[] modules = [new CryptMindModule(), new MystweldModule(), new MythosModule()];
 
 foreach (var module in modules)
 {
@@ -32,6 +40,12 @@ foreach (var module in modules)
 }
 
 var app = builder.Build();
+
+await using (var scope = app.Services.CreateAsyncScope())
+{
+    var db = scope.ServiceProvider.GetRequiredService<FlagsDbContext>();
+    await db.Database.MigrateAsync();
+}
 
 if (app.Environment.IsDevelopment())
 {

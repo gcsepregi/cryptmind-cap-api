@@ -1,14 +1,14 @@
 using System.Security.Cryptography;
 using System.Text;
 using System.Text.Json;
-using Dapper;
-using MySqlConnector;
+using CryptMindCapAPI.Core.Data;
+using Microsoft.EntityFrameworkCore;
 
 namespace CryptMindCapAPI.Core.Services;
 
 public record FlagsResponse(SortedDictionary<string, bool> Flags, string Etag);
 
-public sealed class FeaturesService(AppSettings settings)
+public sealed class FeaturesService(AppSettings settings, FlagsDbContext db)
 {
     private static readonly IReadOnlyDictionary<string, bool> DefaultFlags =
         new SortedDictionary<string, bool>(StringComparer.Ordinal)
@@ -19,26 +19,18 @@ public sealed class FeaturesService(AppSettings settings)
 
     public async Task<SortedDictionary<string, bool>> GetEffectiveFlagsAsync(string entitlementId)
     {
-        if (settings.Sandbox)
-        {
-            return new SortedDictionary<string, bool>(
-                DefaultFlags.ToDictionary(kv => kv.Key, kv => !kv.Key.StartsWith("admin")),
-                StringComparer.Ordinal);
-        }
-
         var eid = NormalizeEntitlementId(entitlementId);
         var flags = new SortedDictionary<string, bool>(
             DefaultFlags.ToDictionary(kv => kv.Key, kv => kv.Value),
             StringComparer.Ordinal);
 
-        await using var conn = new MySqlConnection(settings.MariaDb.FlagsConnectionString);
-        var rows = await conn.QueryAsync<(string FlagKey, int Value)>(
-            "SELECT flag_key, value FROM overrides WHERE entitlement_id = @eid",
-            new { eid });
+        var overrides = await db.Overrides
+            .Where(o => o.EntitlementId == eid)
+            .ToListAsync();
 
-        foreach (var (key, value) in rows)
+        foreach (var o in overrides)
         {
-            flags[key] = value != 0;
+            flags[o.FlagKey] = o.Value;
         }
 
         return flags;
@@ -46,7 +38,6 @@ public sealed class FeaturesService(AppSettings settings)
 
     public static string EtagFor(SortedDictionary<string, bool> flags)
     {
-        // Matches Python: json.dumps(flags, sort_keys=True, separators=(",",":"))
         var json = JsonSerializer.Serialize(flags);
         var hash = SHA256.HashData(Encoding.UTF8.GetBytes(json));
         return Convert.ToHexString(hash).ToLowerInvariant();
@@ -66,7 +57,6 @@ public sealed class FeaturesService(AppSettings settings)
                 break;
             }
         }
-
         return eid;
     }
 }
