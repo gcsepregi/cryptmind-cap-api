@@ -1,6 +1,9 @@
+using System.Net.Http.Headers;
+using System.Text;
 using CryptMindCapAPI.Apps.CryptMind;
 using CryptMindCapAPI.Apps.Mystweld;
 using CryptMindCapAPI.Apps.Mythos;
+using CryptMindCapAPI.Apps.Mythos.Services;
 using CryptMindCapAPI.Core;
 using CryptMindCapAPI.Core.Auth;
 using CryptMindCapAPI.Core.Data;
@@ -26,6 +29,15 @@ builder.Services.AddDbContext<FlagsDbContext>(options =>
     options.UseMySql(settings.MariaDb.FlagsConnectionString,
         ServerVersion.AutoDetect(settings.MariaDb.FlagsConnectionString)));
 builder.Services.AddScoped<FeaturesService>();
+builder.Services.AddHttpClient<CouchDbClient>((sp, client) =>
+{
+    var s = sp.GetRequiredService<AppSettings>();
+    Console.WriteLine("Application settings:" + s.CouchDb.Url);
+    client.BaseAddress = new Uri(s.CouchDb.Url.TrimEnd('/') + "/");
+    var credentials = Convert.ToBase64String(Encoding.UTF8.GetBytes($"{s.CouchDb.AdminUser}:{s.CouchDb.AdminPassword}"));
+    client.DefaultRequestHeaders.Authorization = new AuthenticationHeaderValue("Basic", credentials);
+});
+builder.Services.AddScoped<ApplicationService>();
 builder.Services.AddOpenApi();
 builder.Services.ConfigureHttpJsonOptions(opts =>
 {

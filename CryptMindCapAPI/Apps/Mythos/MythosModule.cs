@@ -1,3 +1,4 @@
+using CryptMindCapAPI.Apps.Mythos.Endpoints;
 using CryptMindCapAPI.Core;
 using CryptMindCapAPI.Core.Endpoints;
 
@@ -14,5 +15,6 @@ public class MythosModule : IAppModule
     public void MapEndpoints(RouteGroupBuilder routes)
     {
         routes.MapFeaturesEndpoints();
+        routes.MapApplicationEndpoints();
     }
 }
