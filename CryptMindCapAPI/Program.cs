@@ -32,7 +32,6 @@ builder.Services.AddScoped<FeaturesService>();
 builder.Services.AddHttpClient<CouchDbClient>((sp, client) =>
 {
     var s = sp.GetRequiredService<AppSettings>();
-    Console.WriteLine("Application settings:" + s.CouchDb.Url);
     client.BaseAddress = new Uri(s.CouchDb.Url.TrimEnd('/') + "/");
     var credentials = Convert.ToBase64String(Encoding.UTF8.GetBytes($"{s.CouchDb.AdminUser}:{s.CouchDb.AdminPassword}"));
     client.DefaultRequestHeaders.Authorization = new AuthenticationHeaderValue("Basic", credentials);
