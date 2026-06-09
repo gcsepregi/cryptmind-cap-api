@@ -167,6 +167,11 @@ public sealed class ZeroKnowledgeAuthService
         }
 
         // 2. ECDSA signature
+        // If Nginx stripped /api, put it back so it matches the frontend signature string
+        if (!requestPath.StartsWith("/api"))
+        {
+            requestPath = "/api" + requestPath;
+        }
         string message = $"{timestamp}:{requestPath}:{requestBody}";
         if (!VerifySignature(publicKeyB64, signatureB64, message))
         {
