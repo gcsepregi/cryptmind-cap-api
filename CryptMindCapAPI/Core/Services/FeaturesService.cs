@@ -6,7 +6,7 @@ using Microsoft.EntityFrameworkCore;
 
 namespace CryptMindCapAPI.Core.Services;
 
-public record FlagsResponse(SortedDictionary<string, bool> Flags, string Etag);
+public record FlagsResponse(SortedDictionary<string, bool> Flags, string Etag, string Entitlement_id);
 
 public sealed class FeaturesService(AppSettings settings, FlagsDbContext db)
 {
@@ -15,6 +15,7 @@ public sealed class FeaturesService(AppSettings settings, FlagsDbContext db)
         {
             ["journal.core"] = true,
             ["mystweld.core"] = true,
+            ["test.core"] = false,
         };
 
     public async Task<SortedDictionary<string, bool>> GetEffectiveFlagsAsync(string entitlementId)
