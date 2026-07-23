@@ -12,7 +12,7 @@ public static class FeaturesEndpoints
             var entitlementId = ctx.ZkUserSpaceId();
             var flags = await features.GetEffectiveFlagsAsync(entitlementId);
             var etag = FeaturesService.EtagFor(flags);
-            return Results.Ok(new FlagsResponse(flags, etag, entitlementId));
+            return Results.Ok(new FlagsResponse(flags, etag));
         })
         .RequireZkAuth();
     }
